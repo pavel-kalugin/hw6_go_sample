@@ -1,0 +1,4 @@
+go_sample
+out/
+vendor/
+_vendor-*
