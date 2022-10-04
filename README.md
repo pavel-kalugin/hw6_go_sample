@@ -9,3 +9,8 @@
 ### Run tests
 `go test -v ./...`
 
+### Docker build
+`docker build -t go-sample .`
+
+### Docker build multistage
+`docker build -t go-sample -f  Dockerfile.multistage . `
