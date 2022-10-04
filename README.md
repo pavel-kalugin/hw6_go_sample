@@ -20,4 +20,4 @@
 
 ### Docker build multistage
 
-`docker build -t go-sample -f  Dockerfile.multistage . `
+`docker build -t go-sample -f  Dockerfile.multistage .`
