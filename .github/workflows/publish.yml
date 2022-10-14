@@ -1,0 +1,76 @@
+name: hw6_go_sample_CD
+
+on:
+  schedule:
+    - cron: '*/60 * * * *'
+  # push:
+  #    branches: ["main"]
+  # pull_request:
+  #    branches: ["main"]
+ 
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Input tags'
+        required: true
+        default: latest
+        type: string
+      skip-test:
+        description: 'Skip test'
+        required: true
+        default: false
+        type: boolean
+      skip-build:
+        description: 'Skip build'
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  publish:
+   runs-on: ubuntu-latest
+   steps:
+    - name: 1_Install Go
+      uses: actions/setup-go@v2
+
+    - name: 2_Checkout code
+      uses: actions/checkout@v1
+
+    - name: prerelease or not
+      id: check_tag
+      run: |
+          if [$TAG == '']
+          then
+              echo "::set-output name=tag::latest"
+          else
+              echo "::set-output name=tag::$TAG"
+          fi
+      env:
+        TAG: ${{ github.event.inputs.tag }}
+
+    - name: 3_Fetch modules for go
+      run: go mod download
+
+    - name: 4_Build
+      if: github.event.inputs.skip-build == 'false'
+      run: go build -v ./...
+
+    - name: 5_Run test
+      if: github.event.inputs.skip-test  == 'false'
+      run: go test -v ./...
+       
+    - name: 6a_Docker Build
+      run: docker build -t go-sample_hm6 .
+
+    - name: 6b_Docker auth
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: 6c_push
+      uses: docker/build-push-action@v3
+      with:
+        context: .
+        push: true
+        tags: pavel-kalugin/hw6_go_sample:${{ steps.check_tag.outputs.tag }}

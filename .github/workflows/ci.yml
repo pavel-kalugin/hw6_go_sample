@@ -1,0 +1,29 @@
+name: hw6_go_sample_CI
+
+on: 
+  push:
+     branches: ["main"]
+  pull_request:
+     branches: ["main"]
+
+jobs:
+  Build:
+   runs-on: ubuntu-latest
+   steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+
+    - name: Checkout code
+      uses: actions/checkout@v1
+
+    - name: Fetch modules for go
+      run: go mod download
+
+    - name: Build 
+      run: go build -v ./...
+
+    - name: Run test
+      run: go test -v ./...
+
+    - name: Docker Build
+      run: docker build -t go-sample .
