@@ -73,4 +73,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: pavel-kalugin/hw6_go_sample:${{ steps.check_tag.outputs.tag }}
+        tags: pavelkalugin/hw6_go_sample:${{ steps.check_tag.outputs.tag }}
